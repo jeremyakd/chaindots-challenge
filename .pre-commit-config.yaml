@@ -1,0 +1,41 @@
+exclude: migrations/
+repos:
+  # Hooks básicos de pre-commit para eliminar espacios, arreglar EOF, etc.
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+
+  # Ruff: Linter y formateador para Python (rápido y eficiente)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.2  # Verifica la última versión estable
+    hooks:
+      - id: ruff
+        exclude: ^(src/rrhh/asistencia/tests/ejemplo_relojes.py)
+        args: [ --fix ]  # Arregla automáticamente los problemas de estilo
+      - id: ruff-format  # Formateador de código Python
+
+  # isort: Ordena las importaciones de Python
+  - repo: https://github.com/pycqa/isort
+    rev: 5.11.5
+    hooks:
+      - id: isort
+        name: isort (python)
+
+  # # Hooks de Django para verificar migraciones
+  # - repo: https://github.com/ecugol/pre-commit-hooks-django
+  #   rev: v0.4.0
+  #   hooks:
+  #     - id: check-untracked-migrations  # Verifica si faltan migraciones por comitear
+  #     - id: check-unapplied-migrations  # Verifica si tienes migraciones sin aplicar
+  #     - id: check-absent-migrations     # Verifica si faltan migraciones por crear
+
+  # Black: Formateador de código (opcional si prefieres Ruff)
+  - repo: https://github.com/psf/black
+    rev: 23.1a1  # Verifica la versión estable
+    hooks:
+      - id: black  # Formateador de código Python, si prefieres usar Black en lugar de Ruff
