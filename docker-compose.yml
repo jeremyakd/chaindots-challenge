@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./social_api:/app/social_api
+    command: python manage.py runserver 0.0.0.0:8000
