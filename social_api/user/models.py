@@ -3,6 +3,8 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """User model with additional fields"""
+
     email = models.EmailField(unique=True, db_index=True)
     username = models.CharField(max_length=100, blank=True, unique=True, db_index=True)
     password = models.CharField(max_length=128, blank=True)

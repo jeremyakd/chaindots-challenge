@@ -9,12 +9,13 @@ from user.serializer import UserSerializer
 
 class UserCreateAPIView(APIView):
     """
-    Create a new user.
+    View to create a new user.
     """
 
     permission_classes = [IsAuthenticated]
 
     def post(self, request, format=None):
+        """Creates a new user profile with provided data."""
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -23,9 +24,14 @@ class UserCreateAPIView(APIView):
 
 
 class UserDetailAPIView(APIView):
+    """
+    View for retrieving user data
+    """
+
     permission_classes = [IsAuthenticated]
 
-    def get_user_data(self, user):
+    def get_user_data(self, user: User) -> dict:
+        """Method to retrieve and format user data"""
         serializer = UserSerializer(user)
         user_data = serializer.data
         user_data["total_posts"] = user.post_set.count()
@@ -35,15 +41,21 @@ class UserDetailAPIView(APIView):
         return user_data
 
     def get(self, request, user_id, format=None):
+        """Method to retrieve user profile data by user ID."""
         user = get_object_or_404(User, pk=user_id)
         user_data = self.get_user_data(user)
         return Response(user_data)
 
 
 class UserCreateFollowAPIView(APIView):
+    """
+    View for creating a new follow relationship
+    """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request, follower_id, followee_id, format=None):
+        """Create a new follow relationship"""
         follower = get_object_or_404(User, pk=follower_id)
         followee = get_object_or_404(User, pk=followee_id)
 
@@ -64,12 +76,13 @@ class UserCreateFollowAPIView(APIView):
 
 class UserListAPIView(APIView):
     """
-    List all users.
+    View for list all users.
     """
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
+        """Method to list all users"""
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
