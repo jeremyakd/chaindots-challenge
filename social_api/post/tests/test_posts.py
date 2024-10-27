@@ -1,17 +1,80 @@
 import pytest
-from django.contrib.auth import get_user_model
+from django.urls import reverse
+from faker import Faker
+from post.constant import POST_ALEADY_EXIST_ERROR, TITLE_ERROR
 from post.models import Post
+from rest_framework import status
+from tests.factories import PostFactory
+from user.models import User
+from tests.conftest import user, client, auth_client
 
-User = get_user_model()
+faker = Faker()
 
 
 @pytest.mark.django_db
-class TestPostModel:
-    def test_create_post(self):
-        author = User.objects.create_user(
-            username="author", email="author@example.com", password="password123"
-        )
-        post = Post.objects.create(author=author, content="This is a test post.")
+class TestPostAPI:
+    """Class to test post endpoints"""
 
-        assert post.author == author
-        assert post.content == "This is a test post."
+    @pytest.fixture(autouse=True)
+    def setup(self, auth_client, user, client):
+        """Setup fixture for initializing test variables."""
+        self.user = user
+        self.client = client
+        self.auth_client = auth_client
+
+    def generate_post_data(self, title=None, content=None):
+        """Generate post data for tests."""
+        return {
+            "title": title or faker.sentence(nb_words=5),
+            "content": content or faker.paragraph(nb_sentences=3),
+            "author": self.user.id,
+        }
+
+    def test_create_post_success(self):
+        """Test case for successfully creating a post."""
+        post_data = self.generate_post_data()
+        response = self.auth_client.post(
+            reverse("post-manager"), post_data, format="json"
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Post.objects.filter(title=post_data["title"]).exists()
+
+    def test_create_post_unauthenticated(self):
+        """Test case for creating a post without authentication."""
+        post_data = self.generate_post_data()
+        self.client.logout()
+        response = self.client.post(reverse("post-manager"), post_data, format="json")
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_create_post_invalid_title(self):
+        """Test case for creating a post with an invalid title."""
+        post_data = self.generate_post_data(title="Short")
+        response = self.auth_client.post(
+            reverse("post-manager"), post_data, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "error" in response.data
+        assert TITLE_ERROR in response.data["error"]
+
+    def test_create_post_duplicate_content(self):
+        """Test case for preventing post creation with duplicate content."""
+        content = faker.paragraph(nb_sentences=3)
+        PostFactory.create(content=content)
+
+        post_data = self.generate_post_data(content=content)
+        response = self.auth_client.post(
+            reverse("post-manager"), post_data, format="json"
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "error" in response.data
+        assert POST_ALEADY_EXIST_ERROR in response.data["error"]
+
+    def test_create_post_failed_by_author(self):
+        author_id = User.objects.last().id + 1
+        post_data = self.generate_post_data({"author": author_id})
+        response = self.client.post(reverse("post-manager"), post_data, format="json")
+        assert response, status.HTTP_400_BAD_REQUEST
