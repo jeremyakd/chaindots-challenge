@@ -10,15 +10,21 @@ from user.models import User
 from user.serializer import UserSerializer
 
 
-class UserCreateAPIView(APIView):
+class UserListCreateAPIView(APIView):
     """
-    API view to create a new user profile.
+    API view to list all users and create a new user profile.
     Only accessible to authenticated users.
     """
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, format: Optional[str] = None) -> Response:
+    def get(self, request, format=None):
+        """Retrieve and return a list of all users."""
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
         """Create a new user profile with the data provided in the request."""
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -109,18 +115,3 @@ class UserCreateFollowAPIView(APIView):
 
         follower.follow(followee)
         return Response({"message": NEW_FOLLOW_MESSAGE}, status=status.HTTP_200_OK)
-
-
-class UserListAPIView(APIView):
-    """
-    API view to list all users.
-    Only accessible to authenticated users.
-    """
-
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request, format: Optional[str] = None) -> Response:
-        """Retrieve and return a list of all users."""
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        return Response(serializer.data)

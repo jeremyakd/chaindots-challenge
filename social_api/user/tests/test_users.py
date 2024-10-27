@@ -26,7 +26,7 @@ class TestUserAPI:
             "password": "newpassword123",
         }
         response = self.auth_client.post(
-            reverse("user-create"), user_data, format="json"
+            reverse("user-list-create"), user_data, format="json"
         )
         assert response.status_code == status.HTTP_201_CREATED
         assert User.objects.filter(username="newuser").exists()
