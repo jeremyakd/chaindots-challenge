@@ -44,7 +44,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set environment variables
-        run: echo "DJANGO_SETTINGS_MODULE=social_api.social_api.settings" >> $GITHUB_ENV
+        run: echo "DJANGO_SETTINGS_MODULE=social_api.settings" >> $GITHUB_ENV
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
       
@@ -53,7 +53,7 @@ jobs:
 
       - name: Run tests
         env:
-          DJANGO_SETTINGS_MODULE: social_api.social_api.settings
+          DJANGO_SETTINGS_MODULE: social_api.settings
           PYTHONPATH: "${{ github.workspace }}"
 
         run: pytest
