@@ -44,9 +44,9 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set environment variables
-        run: echo "DJANGO_SETTINGS_MODULE=social_api.settings" >> $GITHUB_ENV
-        env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: |
+          echo "DJANGO_SETTINGS_MODULE=social_api.settings" >> $GITHUB_ENV
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
       
       - name: Run migrations
         run: python social_api/manage.py migrate
