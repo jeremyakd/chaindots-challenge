@@ -51,7 +51,7 @@ jobs:
       - name: Run migrations
         env:
           PYTHONPATH: "${{ github.workspace }}"
-        run: python social_api/manage.py migrate
+        run: python social_api/social_api/manage.py migrate
 
       - name: Run tests
         env:
