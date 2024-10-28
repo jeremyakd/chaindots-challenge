@@ -54,7 +54,7 @@ jobs:
         run: python social_api/manage.py migrate
 
       - name: Run tests
-        run: pytest
+        run: pytest social_api
 
   docker:
     needs: test-and-build
