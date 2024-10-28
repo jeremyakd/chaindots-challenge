@@ -1,5 +1,6 @@
 import pytest
 from comment.services import CommentService
+from tests.conftest import user, post
 
 
 @pytest.mark.django_db

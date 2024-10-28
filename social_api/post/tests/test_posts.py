@@ -8,6 +8,7 @@ from tests.factories import CommentFactory, PostFactory
 from user.models import User
 from tests.conftest import user, client, auth_client
 
+
 faker = Faker()
 
 
