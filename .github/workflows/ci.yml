@@ -41,10 +41,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest
+      
+      - name: Run migrations
+        run: python social_api/manage.py migrate
 
       - name: Run tests
         env:
-          DJANGO_SETTINGS_MODULE: config.settings.tests
+          DJANGO_SETTINGS_MODULE: social_api.social_api.settings
+          PYTHONPATH: "${{ github.workspace }}"
+
         run: pytest
 
   docker:
