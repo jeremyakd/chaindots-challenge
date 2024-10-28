@@ -91,3 +91,10 @@ Para ejecutar las pruebas del proyecto con `pytest`, sigue los pasos correspondi
     docker exec -it social_api-web-1 pytest
     ```
 
+## Datos adicionales
+
+El proyecto tiene un pipeline configurado. Que realiza test unitarios y buildea la imagen y la pushea al mi repositorio de *dockerhub*.
+
+https://hub.docker.com/r/jeremyakd/social_api
+
+Ademas se agrega *Swagger* para documentacion y pruebas de la API. Mas info [aca](https://swagger.io/)
