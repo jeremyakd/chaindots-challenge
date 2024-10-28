@@ -45,7 +45,7 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "DJANGO_SETTINGS_MODULE=social_api.settings" >> $GITHUB_ENV
+          echo "DJANGO_SETTINGS_MODULE=social_api.social_api.settings" >> $GITHUB_ENV
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
       
       - name: Run migrations
