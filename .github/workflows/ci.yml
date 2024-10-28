@@ -54,10 +54,6 @@ jobs:
         run: python social_api/manage.py migrate
 
       - name: Run tests
-        env:
-          DJANGO_SETTINGS_MODULE: social_api.settings
-          PYTHONPATH: "${{ github.workspace }}"
-
         run: pytest
 
   docker:
