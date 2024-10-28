@@ -122,6 +122,7 @@ AUTH_USER_MODEL = "user.User"
 
 # REST framework settings
 REST_FRAMEWORK = {
+    "DEFAULT_TIMEOUT": 600,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),

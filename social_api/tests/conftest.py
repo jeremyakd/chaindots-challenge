@@ -19,7 +19,7 @@ def post(user):
 @pytest.fixture
 def comment(post, user):
     """Fixture that returns a comment."""
-    return CommentFactory(post=post, user=user)
+    return CommentFactory(post=post, author=user)
 
 
 @pytest.fixture

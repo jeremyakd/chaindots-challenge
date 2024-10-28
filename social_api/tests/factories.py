@@ -21,8 +21,9 @@ class PostFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Post
 
+    author = factory.SubFactory(UserFactory)
+    title = factory.Faker("sentence")
     content = factory.Faker("text")
-    author = factory.SubFactory(UserFactory)  # Cambia `user` a `author`
 
 
 class CommentFactory(factory.django.DjangoModelFactory):
@@ -31,6 +32,6 @@ class CommentFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Comment
 
-    content = factory.Faker("text")
+    author = factory.SubFactory(UserFactory)
     post = factory.SubFactory(PostFactory)
-    user = factory.SubFactory(UserFactory)
+    content = factory.Faker("text")

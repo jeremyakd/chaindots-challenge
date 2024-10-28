@@ -1,10 +1,10 @@
 import pytest
 from django.urls import reverse
 from faker import Faker
-from post.constant import POST_ALEADY_EXIST_ERROR, TITLE_ERROR
+from post.constants import COMMENTS_NUMBER, POST_ALEADY_EXIST_ERROR, TITLE_ERROR
 from post.models import Post
 from rest_framework import status
-from tests.factories import PostFactory
+from tests.factories import CommentFactory, PostFactory
 from user.models import User
 from tests.conftest import user, client, auth_client
 
@@ -78,3 +78,26 @@ class TestPostAPI:
         post_data = self.generate_post_data({"author": author_id})
         response = self.client.post(reverse("post-manager"), post_data, format="json")
         assert response, status.HTTP_400_BAD_REQUEST
+
+    def test_get_post_details(self):
+        """Test to retrieve a post's details, including comments and author."""
+        self.post = PostFactory()
+        for _ in range(5):
+            CommentFactory(post=self.post)
+        url = reverse("post-detail", kwargs={"id": self.post.id})
+        response = self.auth_client.get(url)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert "post" in response.data
+        assert "author" in response.data
+        assert "recent_comments" in response.data
+        assert len(response.data["recent_comments"]) == COMMENTS_NUMBER
+
+    def test_get_non_existent_post(self):
+        """Test to verify response for non-existent post."""
+        url = reverse("post-detail", kwargs={"id": 99999})
+        response = self.client.get(url)
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+        assert "error" in response.data
+        assert response.data["error"] == "Post not found"

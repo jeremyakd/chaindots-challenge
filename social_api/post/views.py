@@ -1,11 +1,13 @@
+from comment.serializer import CommentSerializer
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
-from post.constant import POST_ALEADY_EXIST_ERROR, TITLE_ERROR
+from post.constants import COMMENTS_NUMBER, POST_ALEADY_EXIST_ERROR, TITLE_ERROR
 from post.models import Post
 from post.serializer import PostSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from user.serializer import UserSerializer
 
 
 class PostManagerAPIView(APIView):
@@ -72,3 +74,27 @@ class PostManagerAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id, format=None):
+        try:
+            post = Post.objects.get(pk=id)
+            recent_comments = post.post_comment_set.all().order_by("-created_at")[
+                :COMMENTS_NUMBER
+            ]
+            post_data = PostSerializer(post).data
+            author_data = UserSerializer(post.author).data
+            comments_data = CommentSerializer(recent_comments, many=True).data
+            response_data = {
+                "post": post_data,
+                "author": author_data,
+                "recent_comments": comments_data,
+            }
+            return Response(response_data, status=status.HTTP_200_OK)
+        except Post.DoesNotExist:
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
