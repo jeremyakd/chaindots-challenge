@@ -7,4 +7,8 @@ services:
       - "8000:8000"
     volumes:
       - ./social_api:/app/social_api
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=${SECRET_KEY}
