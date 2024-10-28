@@ -49,6 +49,7 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: social_api.social_api.settings
           PYTHONPATH: "${{ github.workspace }}"
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
         run: pytest
 
